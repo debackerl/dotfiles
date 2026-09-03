@@ -1,0 +1,291 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // the package manager will update opencode
+  "autoupdate": false,
+  "share": "disabled",
+  /*"server": {
+    "hostname": "127.0.0.1",
+    "port": 4096,
+  },*/
+  // type `opencode models`
+  //"model": "vllm/glm-4.7-flash",
+  //"model": "github-copilot/gpt-5-mini",
+  //"model": "opencode-go/minimax-m3",
+  "model": "opencode-go/glm-5.3-flash",
+  //"model": "opencode-go/qwen3.6-plus",
+  // don't let opencode auto-decide which cheap model to use to generate session titles or summary
+  //"small_model": "github-copilot/gpt-5-mini",
+  "small_model": "opencode-go/mimo-v2.5",
+  // avoid any provider which may copy our data for model training
+  "disabled_providers": [
+    "opencode",
+    "minimax-coding-plan",
+  ],
+  "provider": {
+    "opencode-go": {
+      "blacklist": [
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "glm-5.1",
+        "minimax-m2.7",
+        "qwen3.6-plus",
+      ],
+    },
+    "github-copilot": {
+      "whitelist": [
+        "claude-sonnet-4.6",
+        "gpt-5.4",
+        "mai-code-1-flash-picker",
+      ]
+    },
+    "local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Local",
+      "options": {
+        "baseURL": "http://laurent-workstation.lan.etive.com:8000/v1"
+      },
+      "models": {
+        "qwen3.8-27b": {
+          "name": "Qwen3.8-27B",
+          "limit": {
+            "context": 262144,
+            "output": 131072
+          },
+          "variants": {
+            "Instruct": { "chat_template_kwargs": { "enable_thinking": false } },
+            "Low": { "chat_template_kwargs": { "reasoning_effort": "low" } },
+            "Medium": { "chat_template_kwargs": { "reasoning_effort": "medium" } },
+            "Extra-High": { "chat_template_kwargs": { "reasoning_effort": "xhigh" } },
+          },
+          "modalities": {
+            "input": [ "image", "video" ]
+          },
+          "attachment": true,
+        }
+        /*"kat-coder-v2.5-dev": {
+          "name": "KAT-Coder-V2.5-Dev",
+          "limit": {
+            "context": 262144,
+            "output": 65536
+          },
+          "variants": {
+            "Instruct": {
+              "chat_template_kwargs": { "enable_thinking": false }
+            }
+          },
+          "attachment": true,
+        },
+        "qwopus3.6-35b-a3b-coder": {
+          "name": "Qwopus3.6-35B-A3B-Coder",
+          "limit": {
+            "context": 262144,
+            "output": 65536
+          },
+          "variants": {
+            "Instruct": {
+              "chat_template_kwargs": { "enable_thinking": false }
+            }
+          },
+          "modalities": {
+            "input": [ "image", "video" ]
+          },
+          "attachment": true,
+        },
+        "thinkingcap-qwen3.6-27b": {
+          "name": "ThinkingCap-Qwen3.6-27B",
+          "limit": {
+            "context": 262144,
+            "output": 65536
+          },
+          "variants": {
+            "Instruct": {
+              "chat_template_kwargs": { "enable_thinking": false }
+            }
+          },
+          "modalities": {
+            "input": [ "image", "video" ]
+          },
+          "attachment": true,
+        },*/
+        /*"glm-4.7-flash": {
+          // https://models.dev/?search=GLM-4.7-Flash
+          "name": "GLM 4.7 Flash",
+          "limit": {
+            "context": 95000,
+            "output": 32768
+          },
+          "variants": {
+            "Instruct": {
+              "chat_template_kwargs": { "enable_thinking": false }
+            }
+          }
+        },*/
+      }
+    },
+  },
+  "default_agent": "plan",
+  "mcp": {
+    /*"fibery": {
+      // breaks Fireworks' Kimi K2.5 Turbo: JSON Schema not supported: could not understand the instance `{'not': {}}`.
+      // $ opencode mcp auth fibery
+      "type": "remote",
+      "url": "https://mcp.fibery.io/mcp"
+    },*/
+    /*"mcpmu-coding": {
+      "enabled": true,
+      "type": "local",
+      "command": ["mcpmu", "serve", "--stdio", "--namespace", "coding"],
+    },*/
+    "narsil": {
+      // https://github.com/postrv/narsil-mcp
+      "enabled": true,
+      "type": "local",
+      "command": ["narsil-mcp", "--repos", ".", "--watch", "--call-graph", "--git", "--neural", "--neural-backend", "api", "--neural-model", "jina-code-embeddings-0.5b-Q8_0.gguf", "--neural-dimension", "896"],
+      "environment": {
+        "EMBEDDING_SERVER_ENDPOINT": "http://127.0.0.1:28080/v1/embeddings",
+        "EMBEDDING_API_KEY": "open",
+      }
+    },
+    "ddg": {
+      // DuckDuckGo search engine; https://github.com/OEvortex/ddg_search
+      "enabled": true,
+      "type": "local",
+      "command": ["bunx", "@oevortex/ddg_search"],
+    },
+    /*"ddg": {
+      // https://github.com/CyranoB/duckduckgo-mcp
+      "enabled": true,
+      "type": "local",
+      "command": ["uvx", "duckduckgo-mcp", "serve"],
+    },*/
+    /*"ddg": {
+      // https://github.com/ericthered926/duckduckgo-mcp-server
+      "enabled": true,
+      "type": "local",
+      "command": ["bunx", "@ericthered926/duckduckgo-mcp-server"],
+      "environment": {
+        "RATE_LIMIT_PER_SECOND": "2",
+        "DDG_MAX_RESULTS": "10",
+        "DDG_ENABLE_FULL_CONTENT": "true",
+      },
+    },*/
+    "yt": {
+      // YouTube; https://github.com/BlockBenny/tubemcp
+      "enabled": true,
+      "type": "local",
+      "command": ["uvx", "tubemcp"],
+    },
+    /*"docset": {
+      // https://github.com/codybrom/DocsetMCP
+      "enabled": true,
+      "type": "local",
+      "command": ["uvx", "docsetmcp"],
+    },*/
+    "browser": {
+      // Web Browser;
+      "enabled": true,
+      "type": "remote",
+      // Scrapling
+      "url": "http://127.0.0.1:9653/mcp",
+    },
+    "catalogue": {
+      // Software Documentation; https://github.com/arabold/docs-mcp-server/
+      // tools: https://github.com/arabold/docs-mcp-server/blob/main/src/mcp/mcpServer.ts
+      "enabled": true,
+      "type": "remote",
+      // docs-mcp-server
+      "url": "https://docs-mcp-server.lan.etive.com/mcp",
+    },
+    "public-code": {
+      // Public Code Snippets
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+    },
+    "registries": {
+      // Public Software Repositories; https://github.com/ecosyste-ms/mcp-server
+      "enabled": true,
+      "type": "local",
+      "command": ["bunx", "@ecosyste-ms/mcp"],
+    },
+  },
+  "plugin": [
+    //"opencode-beads@0.4.0", // https://github.com/joshuadavidthomas/opencode-beads
+    //"cc-safety-net@0.7.1", // https://github.com/kenryu42/claude-code-safety-net
+    //"@plannotator/opencode@latest", // https://github.com/backnotprop/plannotator
+    //"@williamcr01/opencode-tps", // https://github.com/williamcr01/opencode-tps
+    "@tarquinen/opencode-dcp@latest", // https://github.com/Opencode-DCP/opencode-dynamic-context-pruning
+    "@angdrew/opencode-hashline-plugin", // https://github.com/AngDrew/opencode-hashline
+  ],
+  "permission": {
+    // path are relative to the worktree; the worktree is the nearest (parent) Git directory (goes up to /)
+    // if no Git repository is found, / is the worktree, and the relative path is simply the full path minus the first /
+
+    "*": "ask",
+    "doom_loop": "deny",
+    "external_directory": "deny",
+
+    "bash": "deny",
+    /*"bash": {
+      "*": "ask",
+      "ls *": "allow",
+      "grep *": "allow",
+      "cat *": "allow",
+      "bun astro sync": "allow",
+      "bun astro check": "allow",
+      "bun astro build": "allow",
+      "bun svelte-kit sync": "allow",
+      "bun vite build": "allow",
+      "su *": "deny",
+      "sudo *": "deny",
+    },*/
+    "read": {
+      "*": "allow",
+      "~/.ssh/*": "deny",
+      "~/.ssh/*.pub": "allow",
+    },
+    "grep": {
+      "*": "allow",
+      "~/.*/*": "deny",
+    },
+    "edit": "deny",
+    "glob": "allow",
+    "list": "allow",
+    "task": {
+      // by default, we break any possible cycle between (sub-)agents:
+      // only inquiro is available by default, which can't call any other agent
+      "*": "deny",
+      "inquiro": "allow",
+    },
+    "skill": {
+      "*": "allow",
+      "coder-*": "deny",
+    },
+    "lsp": "deny",
+    "todoread": "deny",
+    "todowrite": "deny",
+    "question": "allow",
+    "webfetch": "deny",
+    "websearch": "deny",
+
+    "ddg_*": "deny",
+    "yt_*": "deny",
+    "browser_*": "deny",
+    "catalogue_*": "deny",
+    "public-code_*": "deny",
+    "registries_*": "deny",
+    "knowledge-base_*": "deny",
+    "projects_*": "deny",
+    "duckdb_*": "deny",
+    "narsil_*": "deny",
+    "fibery_*": "deny",
+
+    //"browser_get": "allow",
+    //"browser_fetch": "allow",
+    //"browser_stealthy_fetch": "allow",
+    //"mcpmu-coding_code-runner_javascript-code-runner": "allow",
+    //"mcpmu-coding_code-runner_python-code-runner": "allow",
+  },
+  "formatter": {
+  }
+}

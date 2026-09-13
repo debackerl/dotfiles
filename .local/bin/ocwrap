@@ -1,0 +1,41 @@
+#!/bin/bash
+
+mkdir -p "/home/$USER/.config/opencode" "/home/$USER/.local/share/opencode" "/home/$USER/.local/state/opencode" "/home/$USER/.cache/opencode"
+mkdir -p "/home/$USER/.config/ocwrap" "/home/$USER/.cache/ocwrap" "/tmp/ocwrap"
+
+bwrap_args=(
+  --unshare-pid
+  --unshare-uts
+  --unshare-ipc
+  --share-net
+  --die-with-parent
+  --new-session
+  --dev-bind /dev /dev
+  --ro-bind /bin /bin
+  --ro-bind /etc /etc
+  --ro-bind /usr /usr
+  --ro-bind /lib /lib
+  --ro-bind-try /lib64 /lib64
+  --bind /tmp/ocwrap /tmp
+  --proc /proc
+  --bind "$PWD" "$PWD"
+  --bind "$HOME/.config/ocwrap" "/home/$USER/.config"
+  --ro-bind "$HOME/.config/opencode" "/home/$USER/.config/opencode"
+  --bind "$HOME/.local/share/opencode" "/home/$USER/.local/share/opencode"
+  --bind "$HOME/.local/state/opencode" "/home/$USER/.local/state/opencode"
+  --bind "$HOME/.cache/opencode" "/home/$USER/.cache/opencode"
+  --bind-try "$HOME/.cache/ocwrap/.bun" "/home/$USER/.bun"
+  --bind "$HOME/.cache/ocwrap" "/home/$USER/.cache"
+  --setenv HOME "/home/$USER"
+)
+
+if [ -e "/home/linuxbrew" ]; then
+  if [ -e "/var/home/linuxbrew" ]; then
+    bwrap_args+=( --ro-bind /var/home/linuxbrew /var/home/linuxbrew )
+    bwrap_args+=( --symlink /var/home/linuxbrew /home/linuxbrew )
+  else
+    bwrap_args+=( --ro-bind /home/linuxbrew /home/linuxbrew )
+  fi
+fi
+
+exec bwrap "${bwrap_args[@]}" -- opencode "$@"

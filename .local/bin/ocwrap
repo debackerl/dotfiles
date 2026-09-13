@@ -16,6 +16,7 @@ bwrap_args=(
   --ro-bind /usr /usr
   --ro-bind /lib /lib
   --ro-bind-try /lib64 /lib64
+  --ro-bind /run /run
   --bind /tmp/ocwrap /tmp
   --proc /proc
   --bind "$PWD" "$PWD"
